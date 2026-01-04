@@ -14,7 +14,7 @@ on:
         default: ''
       builder_image:
         description: 'Builder image (default: ghcr.io/huihuimoe/vyos-arm64-build/vyos-builder:current-arm64, official: docker.io/vyos/vyos-build:current-arm64)'
-        default: ''
+        default: 'ghcr.io/makerhe/vyos-arm64-build/vyos-builder:current-arm64'
 
 env:
   DEBIAN_MIRROR: http://deb.debian.org/debian/
@@ -138,7 +138,7 @@ jobs:
       - name: Checkout vyos-build repo
         uses: actions/checkout@v6
         with:
-          repository: vyos/vyos-build
+          repository: ${{ github.repository_owner }}/vyos-build
           path: vyos-build
 
       - name: Fix vyos-build
@@ -153,7 +153,7 @@ jobs:
           set -ex
 
           ### vyos-1x
-          git clone --recursive https://github.com/vyos/vyos-1x \
+          git clone --recursive https://github.com/${{ github.repository_owner }}/vyos-1x \
             -b current --single-branch vyos-build/scripts/package-build/vyos-1x/vyos-1x
           # fixing unknown internal blob file
           # i don't know what is this file and why it's not in the repo
@@ -214,7 +214,8 @@ jobs:
           # packages=$(ls .)
           # packages="radvd vyos-1x linux-kernel"
           packages="vyos-1x"
-          ignore_packages=(amazon-cloudwatch-agent amazon-ssm-agent xen-guest-agent)
+          # ignore_packages=(amazon-cloudwatch-agent amazon-ssm-agent xen-guest-agent)
+          ignore_packages=(xen-guest-agent)
           for package in $packages; do
             [ ! -d $package ] && continue
             [[ " ${ignore_packages[@]} " =~ " ${package} " ]] && continue
@@ -376,13 +377,13 @@ jobs:
       - name: Clone vyos-build repo
         uses: actions/checkout@v6
         with:
-          repository: vyos/vyos-build
+          repository: ${{ github.repository_owner }}/vyos-build
           path: vyos-build
           fetch-depth: 0
       - name: Clone vyos-1x source code
         uses: actions/checkout@v6
         with:
-          repository: vyos/vyos-1x
+          repository: ${{ github.repository_owner }}/vyos-1x
           path: vyos-1x
           fetch-depth: 0
       - id: commit_ids
@@ -404,7 +405,7 @@ jobs:
         id: generate_changelog_for_vyos-1x
         uses: mikepenz/release-changelog-builder-action@v6.2.1
         with:
-          owner: "vyos"
+          owner: ${{ github.repository_owner }}
           repo: "vyos-1x"
           fetchReviewers: false
           fromTag: ${{ steps.commit_ids.outputs.CHANGELOG_COMMIT_VYOS_1X }}
@@ -413,14 +414,14 @@ jobs:
             {
               "categories": [{"title": "", "labels": []}],
               "template": "#{{CHANGELOG}}",
-              "pr_template": "- #{{TITLE}}\n   - PR: vyos/vyos-1x##{{NUMBER}}"
+              "pr_template": "- #{{TITLE}}\n   - PR: ${{ github.repository_owner }}/vyos-1x##{{NUMBER}}"
             }
 
       - name: "Release publishing: generate changelog for vyos-build"
         id: generate_changelog_for_vyos-build
         uses: mikepenz/release-changelog-builder-action@v6.2.1
         with:
-          owner: "vyos"
+          owner: ${{ github.repository_owner }}
           repo: "vyos-build"
           fetchReviewers: false
           fromTag: ${{ steps.commit_ids.outputs.CHANGELOG_COMMIT_VYOS_BUILD }}
@@ -429,7 +430,7 @@ jobs:
             {
               "categories": [{"title": "", "labels": []}],
               "template": "#{{CHANGELOG}}",
-              "pr_template": "- #{{TITLE}}\n   - PR: vyos/vyos-build##{{NUMBER}}"
+              "pr_template": "- #{{TITLE}}\n   - PR: ${{ github.repository_owner }}/vyos-build##{{NUMBER}}"
             }
 
       - name: "Release publishing: generate CHANGELOG.md"
