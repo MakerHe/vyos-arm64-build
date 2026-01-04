@@ -14,7 +14,7 @@ on:
         default: ''
       builder_image:
         description: 'Builder image (default: ghcr.io/huihuimoe/vyos-arm64-build/vyos-builder:current-arm64, official: docker.io/vyos/vyos-build:current-arm64)'
-        default: ''
+        default: 'ghcr.io/makerhe/vyos-arm64-build/vyos-builder:current-arm64'
 
 env:
   DEBIAN_MIRROR: http://deb.debian.org/debian/
