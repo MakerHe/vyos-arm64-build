@@ -138,7 +138,7 @@ jobs:
       - name: Checkout vyos-build repo
         uses: actions/checkout@v6
         with:
-          repository: vyos/vyos-build
+          repository: ${{ github.repository_owner }}/vyos-build
           path: vyos-build
 
       - name: Fix vyos-build
@@ -153,7 +153,7 @@ jobs:
           set -ex
 
           ### vyos-1x
-          git clone --recursive https://github.com/vyos/vyos-1x \
+          git clone --recursive https://github.com/${{ github.repository_owner }}/vyos-1x \
             -b current --single-branch vyos-build/scripts/package-build/vyos-1x/vyos-1x
           # fixing unknown internal blob file
           # i don't know what is this file and why it's not in the repo
@@ -162,8 +162,8 @@ jobs:
           # https://github.com/vyos/vyos-1x/commit/dd5f9c19550c1f8ccb5e93bab0b604f9f9e1383e
           cp data/reftree.cache vyos-build/scripts/package-build/vyos-1x/vyos-1x/data/reftree.cache
           # apply patches
-          patch --no-backup-if-mismatch -p1 -d vyos-build/scripts/package-build/vyos-1x/vyos-1x < data/vyos-1x-001-system_console.patch
-          patch --no-backup-if-mismatch -p1 -d vyos-build/scripts/package-build/vyos-1x/vyos-1x < data/vyos-1x-002-boot_console.patch
+          # patch --no-backup-if-mismatch -p1 -d vyos-build/scripts/package-build/vyos-1x/vyos-1x < data/vyos-1x-001-system_console.patch
+          # patch --no-backup-if-mismatch -p1 -d vyos-build/scripts/package-build/vyos-1x/vyos-1x < data/vyos-1x-002-boot_console.patch
           patch --no-backup-if-mismatch -p1 -d vyos-build/scripts/package-build/vyos-1x/vyos-1x < data/vyos-1x-003-increase_vyshim_init_timeout.patch
           patch --no-backup-if-mismatch -p1 -d vyos-build/scripts/package-build/vyos-1x/vyos-1x < data/vyos-1x-004-enable_telegraf_support.patch
           # Error: OCI runtime error: crun: cannot set memory+swap limit less than the memory limit
@@ -188,7 +188,7 @@ jobs:
           # sign kernel module but donot sign vmlinuz
           patch --no-backup-if-mismatch -p1 -d vyos-build < data/vyos-build-007-no_sbsign.patch
           patch --no-backup-if-mismatch -p1 -d vyos-build < data/vyos-build-008-fix_live_boot_initramfs_link.patch
-          patch --no-backup-if-mismatch -p1 -d vyos-build < data/vyos-build-009-live_boot_serial_console_device.patch
+          # patch --no-backup-if-mismatch -p1 -d vyos-build < data/vyos-build-009-live_boot_serial_console_device.patch
           # https://github.com/vyos/vyos-build/blob/fd737172f1068870fe1ededbe9b2ed4a86663acd/data/live-build-config/includes.chroot/var/lib/shim-signed/mok/README.md
           if [ -f data/mok/MOK.key ]; then
             # https://github.com/vyos/vyos-build/commit/d552f7f8c38d7ad3bd28d9019a58b57e41b07f0b
@@ -208,7 +208,8 @@ jobs:
           set -ex
           # packages=$(ls .)
           packages="radvd vyos-1x linux-kernel"
-          ignore_packages=(amazon-cloudwatch-agent amazon-ssm-agent xen-guest-agent)
+          # ignore_packages=(amazon-cloudwatch-agent amazon-ssm-agent xen-guest-agent)
+          ignore_packages=(xen-guest-agent)
           for package in $packages; do
             [ ! -d $package ] && continue
             [[ " ${ignore_packages[@]} " =~ " ${package} " ]] && continue
@@ -386,13 +387,13 @@ jobs:
       - name: Clone vyos-build repo
         uses: actions/checkout@v6
         with:
-          repository: vyos/vyos-build
+          repository: ${{ github.repository_owner }}/vyos-build
           path: vyos-build
           fetch-depth: 0
       - name: Clone vyos-1x source code
         uses: actions/checkout@v6
         with:
-          repository: vyos/vyos-1x
+          repository: ${{ github.repository_owner }}/vyos-1x
           path: vyos-1x
           fetch-depth: 0
       - id: commit_ids
@@ -414,7 +415,7 @@ jobs:
         id: generate_changelog_for_vyos-1x
         uses: mikepenz/release-changelog-builder-action@v6.0.1
         with:
-          owner: "vyos"
+          owner: ${{ github.repository_owner }}
           repo: "vyos-1x"
           fetchReviewers: false
           fromTag: ${{ steps.commit_ids.outputs.CHANGELOG_COMMIT_VYOS_1X }}
@@ -423,14 +424,14 @@ jobs:
             {
               "categories": [{"title": "", "labels": []}],
               "template": "#{{CHANGELOG}}",
-              "pr_template": "- #{{TITLE}}\n   - PR: vyos/vyos-1x##{{NUMBER}}"
+              "pr_template": "- #{{TITLE}}\n   - PR: ${{ github.repository_owner }}/vyos-1x##{{NUMBER}}"
             }
 
       - name: "Release publishing: generate changelog for vyos-build"
         id: generate_changelog_for_vyos-build
         uses: mikepenz/release-changelog-builder-action@v6.0.1
         with:
-          owner: "vyos"
+          owner: ${{ github.repository_owner }}
           repo: "vyos-build"
           fetchReviewers: false
           fromTag: ${{ steps.commit_ids.outputs.CHANGELOG_COMMIT_VYOS_BUILD }}
@@ -439,7 +440,7 @@ jobs:
             {
               "categories": [{"title": "", "labels": []}],
               "template": "#{{CHANGELOG}}",
-              "pr_template": "- #{{TITLE}}\n   - PR: vyos/vyos-build##{{NUMBER}}"
+              "pr_template": "- #{{TITLE}}\n   - PR: ${{ github.repository_owner }}/vyos-build##{{NUMBER}}"
             }
 
       - name: "Release publishing: generate CHANGELOG.md"
