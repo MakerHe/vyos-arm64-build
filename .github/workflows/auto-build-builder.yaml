@@ -43,7 +43,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          repository: vyos/vyos-build
+          repository: ${{ github.repository_owner }}/vyos-build
           ref: ${{ steps.set_env_variables.outputs.source_ref }}
       - name: Log in to the Container registry
         uses: docker/login-action@v3
