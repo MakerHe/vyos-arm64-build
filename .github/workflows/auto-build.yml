@@ -213,8 +213,7 @@ jobs:
           set -ex
           # packages=$(ls .)
           # packages="radvd vyos-1x linux-kernel"
-          packages="vyos-1x"
-          # ignore_packages=(amazon-cloudwatch-agent amazon-ssm-agent xen-guest-agent)
+          packages="vyos-1x amazon-ssm-agent amazon-cloudwatch-agent aws-gwlbtun"
           ignore_packages=(xen-guest-agent)
           for package in $packages; do
             [ ! -d $package ] && continue
