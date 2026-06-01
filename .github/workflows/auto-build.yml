@@ -154,7 +154,7 @@ jobs:
 
           ### vyos-1x
           git clone --recursive https://github.com/${{ github.repository_owner }}/vyos-1x \
-            -b current --single-branch vyos-build/scripts/package-build/vyos-1x/vyos-1x
+            -b rolling --single-branch vyos-build/scripts/package-build/vyos-1x/vyos-1x
           # fixing unknown internal blob file
           # i don't know what is this file and why it's not in the repo
           # without this file, the build will failed
