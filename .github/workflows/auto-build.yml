@@ -184,6 +184,9 @@ jobs:
           fi
           # add minisign pubkey
           cp data/huihuimoe-vyos-arm64.minisign.pub vyos-build/data/live-build-config/includes.chroot/usr/share/vyos/keys/
+          # add cloud-init patch hook
+          mkdir -p vyos-build/data/live-build-config/hooks/live
+          cp data/9999-patch-cloud-init.hook.chroot vyos-build/data/live-build-config/hooks/live/
 
           true
 

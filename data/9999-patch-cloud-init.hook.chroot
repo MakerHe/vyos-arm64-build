@@ -1,0 +1,11 @@
+#!/bin/bash
+# Patch cc_vyos.py: remove forced default MTU 1500 on ethernet
+# When DHCP provides MTU (e.g. EC2 sends 9001), it should not be overridden
+set -e
+
+CC_VYOS="/usr/lib/python3/dist-packages/cloudinit/config/cc_vyos.py"
+[ -f "$CC_VYOS" ] || exit 0
+
+sed -i '/# We still need to set default MTU for Ethernet, for compatibility reasons/{N;N;d;}' "$CC_VYOS"
+
+echo "cc_vyos.py patched: removed forced default MTU"
