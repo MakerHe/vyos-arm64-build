@@ -20,7 +20,7 @@ env:
   DEBIAN_MIRROR: http://deb.debian.org/debian/
   DEBIAN_SECURITY_MIRROR: http://deb.debian.org/debian-security
   # ~~no package on the official repo~~ fixed
-  VYOS_MIRROR: https://packages.vyos.net/repositories/current/
+  VYOS_MIRROR: https://packages.vyos.net/repositories/rolling/
   # this repo doesn't seem to be updated anymore
   # https://dev.packages.vyos.net/?dir=repositories/current/dists/current
   # VYOS_MIRROR: https://rolling-packages.vyos.net/current/
